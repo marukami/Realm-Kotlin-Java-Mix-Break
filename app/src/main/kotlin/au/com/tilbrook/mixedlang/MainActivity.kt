@@ -28,23 +28,34 @@ class MainActivity : AppCompatActivity() {
                     .show()
         }
 
-        val realmConfig = RealmConfiguration.Builder(this).build()
+        val realmConfig = RealmConfiguration.Builder(this)
+                .deleteRealmIfMigrationNeeded()
+                .build()
         val realm = Realm.getInstance(realmConfig);
         var cat = realm.where(CatModel::class.java)
                 .findFirst();
 
         cat = if (cat == null) {
-            CatModel().apply {
+            realm.beginTransaction()
+            cat = CatModel().apply {
                 name = "CAT"
                 age = 1
             }
+            realm.copyToRealmOrUpdate(cat)
+            realm.commitTransaction()
+            cat
         } else {
+            realm.beginTransaction()
             cat.apply {
                 age = age?.plus(1)
             }
+            realm.copyToRealmOrUpdate(cat)
+            realm.commitTransaction()
+            cat
         }
 
         textField.text = "Hello World! ${cat.name} aged ${cat.age} welcomes you"
+        realm.close()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
