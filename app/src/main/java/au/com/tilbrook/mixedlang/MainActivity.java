@@ -31,12 +31,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.bind(this);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final RealmConfiguration realmConfig = new RealmConfiguration.Builder(this).build();
+        final RealmConfiguration realmConfig = new RealmConfiguration.Builder(this)
+            .deleteRealmIfMigrationNeeded()
+            .build();
         final Realm realm = Realm.getInstance(realmConfig);
         CatModel cat = realm.where(CatModel.class)
             .findFirst();
@@ -61,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
             cat.getAge()
         );
         textView.setText(text);
+
+        realm.close();
     }
 
     @Override
