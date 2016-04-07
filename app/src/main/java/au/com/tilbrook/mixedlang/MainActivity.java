@@ -13,6 +13,8 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,7 +36,31 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        textView.setText("Hello World!");
+        final RealmConfiguration realmConfig = new RealmConfiguration.Builder(this).build();
+        final Realm realm = Realm.getInstance(realmConfig);
+        CatModel cat = realm.where(CatModel.class)
+            .findFirst();
+
+        if(cat == null) {
+            cat = new CatModel();
+            cat.setName("Cat");
+            cat.setAge(1);
+            realm.beginTransaction();
+            cat = realm.copyToRealmOrUpdate(cat);
+            realm.commitTransaction();
+        } else {
+            realm.beginTransaction();
+            cat.setAge(cat.getAge() + 1);
+            cat = realm.copyToRealmOrUpdate(cat);
+            realm.commitTransaction();
+        }
+
+        final String text = String.format(
+            "Hello World! %s aged %d welcomes you",
+            cat.getName(),
+            cat.getAge()
+        );
+        textView.setText(text);
     }
 
     @Override
