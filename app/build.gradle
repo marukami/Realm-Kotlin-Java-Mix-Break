@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath files('libs/realm-transformer-0.89.0-SNAPSHOT.jar')
+        classpath 'io.realm:realm-transformer:0.89.0-SNAPSHOT'
         classpath files('libs/realm-gradle-plugin-0.89.0-SNAPSHOT.jar')
     }
 }
